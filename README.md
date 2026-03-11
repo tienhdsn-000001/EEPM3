@@ -35,22 +35,46 @@ The pipeline is decoupled into three notebooks to protect GPU quota from the slo
 
 ### Phase 6: Decoupled "Fire & Forget" Execution
 
-1. **Step 1: Generation (`notebooks/nb_A_generator.ipynb`)**
-   - **Hardware**: GPU T4 ×2
-   - **Action**: Run all. Generates 5,000 trajectories using the dual-head Conv1D policy.
-   - **Output**: Export `/kaggle/working` as a dataset named `unscored-trajectories`.
+This pipeline completely insulates your Kaggle GPU quota from API bottlenecking. Here is the chronological execution flow detailing exactly what requires user action versus what happens under the hood.
 
-2. **Step 2: API Worker (`notebooks/nb_B_api_worker.ipynb`)**
-   - **Hardware**: **CPU ONLY** (Accelerator: None)
-   - **Data**: Mount the `unscored-trajectories` dataset to `../input/unscored-trajectories/`.
-   - **Action**: Run via "Save Version -> Save & Run All (Commit)".
-   - **Resilience**: Runs asynchronously in the background for up to 12 hours. Uses SQLite WAL to save incrementally.
-   - **Output**: Export `/kaggle/working` as a dataset named `edm3-experience-buffer`.
+#### Step 1: Generation (`notebooks/nb_A_generator.ipynb`)
+**[ User Action Required ]**
+- **Environment**: Select **Accelerator: GPU T4 ×2** (or P100).
+- **Run**: Click "Run All".
+- **Export**: Navigate to the output panel and export `/kaggle/working` as a new dataset named `unscored-trajectories`.
 
-3. **Step 3: Offline Training (`notebooks/nb_C_offline_trainer.ipynb`)**
-   - **Hardware**: GPU T4 ×2
-   - **Data**: Mount the `edm3-experience-buffer` database.
-   - **Action**: Run all. Executes RBS augmentation and SOTA α-GFN offline training.
+**[ Under the Hood ]**
+- The JAX environment initializes the Dual-Head Conv1D `GeneratorPolicy` (34,136 parameters).
+- Trajectory generation runs completely offline against the policy.
+- Generates 5,000 unique DNA trajectories, each 100,000 bp long, with 10 forced edits per trajectory, applying $T=2.0$ temperature sampling for exploration.
+- Exports the one-hot tensors, action sequences, log-probabilities, and sequence strings into a highly compressed `unscored_trajectories.npz` archive.
+
+#### Step 2: API Worker (`notebooks/nb_B_api_worker.ipynb`)
+**[ User Action Required ]**
+- **Environment**: Select **Accelerator: None** (CRITICAL: CPU-only to protect GPU quota).
+- **Data Hookup**: Mount your exported `unscored-trajectories` dataset to `../input/unscored-trajectories/`.
+- **Run**: Click **"Save Version -> Save & Run All (Commit)"**. Close the browser; do not wait interactively.
+- **Export**: Once the run completes or times out (up to 12 hours), export `/kaggle/working` as a new dataset named `edm3-experience-buffer`.
+
+**[ Under the Hood — Headless & Resilient ]**
+- The worker executes blindly in the Kaggle background architecture.
+- Initializes an aggressive `WAL` (Write-Ahead Logging) SQLite database (`experience_replay.db`).
+- Loads the 5,000 trajectories and triggers an asynchronous `aiohttp` scoring loop with a concurrency semaphore against the AlphaGenome API.
+- Converts the 100kb sequences into exactly 131,072 bp N-padded tensors for the API `DNASE` modality.
+- **Rate-Limiting Defense**: If AlphaGenome returns a `429 Too Many Requests` or `RESOURCE_EXHAUSTED` error, the worker catches it and applies a strict `2.0s` exponential backoff automatically.
+- **Crash Safety**: Every successful batch of 50 scored sequences is immediately `commit()`ted to the SQLite database. If Kaggle kills the CPU instance at the 12-hour limit, the database remains 100% uncorrupted and retains all progress up to that exact second.
+
+#### Step 3: Offline Training (`notebooks/nb_C_offline_trainer.ipynb`)
+**[ User Action Required ]**
+- **Environment**: Select **Accelerator: GPU T4 ×2**.
+- **Data Hookup**: Mount the `edm3-experience-buffer` database.
+- **Run**: Click "Run All". Download `edm3_v2_weights_final.npz` upon completion.
+
+**[ Under the Hood ]**
+- **Data Safing**: Copies the SQLite DB out of the read-only mounted dataset space into `/kaggle/working`.
+- **RBS Augmentation**: Retrospective Backward Synthesis evaluates the SQLite DB, identifying the top 10% highest-reward trajectories. It generates thousands of hallucinated mutation permutations to artificially multiply the high-reward signal.
+- **SOTA Training**: The $\alpha$-GFN optimizer bootstraps. It uses `jax.vmap` batching to process the Sub-EB Loss function spanning both the action head and the V(s) value head. 
+- **Convergence**: An Exponential Moving Average (EMA) tracker algorithmically monitors the Trajectory Balance loss. Once the loss variance drops below a set threshold, it terminates training early and saves the optimal weights.
 
 ### Alternative: Bash Pipeline on Kaggle
 
