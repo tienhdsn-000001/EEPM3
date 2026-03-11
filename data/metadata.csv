@@ -1,0 +1,4 @@
+filepath,tissue,age_bracket,track_index
+data/gtex/brain_mock.bw,MockTissue,20-30,10
+data/gtex/liver_mock.bw,MockTissue,20-30,42
+data/gtex/blood_mock.bw,MockTissue,20-30,99

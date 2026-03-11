@@ -1,0 +1,49 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# =========================
+# Virtual Environments
+# =========================
+venv/
+.venv/
+env/
+.env/
+
+# =========================
+# Data & Large Files
+# =========================
+data/experience_replay.db
+data/unscored_trajectories.npz
+*.db
+*.sqlite3
+
+# =========================
+# Logs
+# =========================
+logs/
+*.log
+
+# =========================
+# OS & Editor
+# =========================
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# =========================
+# Jupyter Notebook
+# =========================
+.ipynb_checkpoints/
