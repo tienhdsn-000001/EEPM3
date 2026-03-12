@@ -24,7 +24,7 @@
 # 5. Offline α-GFN training with dual-head policy
 #
 # **Runtime**: Use GPU (T4/P100) accelerator.
-# Set `ALPHAGENOME_API_KEY` in Kaggle Secrets or Colab userdata.
+# Set `ALPHA_GENOME_API_KEY` in Kaggle Secrets or Colab userdata.
 
 # %% [markdown]
 # ## 0. Setup & Dependencies
@@ -61,15 +61,15 @@ print("Dependencies installed.")
 # Load API key from platform secrets
 if IN_KAGGLE:
     from kaggle_secrets import UserSecretsClient
-    ALPHAGENOME_API_KEY = UserSecretsClient().get_secret("ALPHAGENOME_API_KEY")
+    ALPHA_GENOME_API_KEY = UserSecretsClient().get_secret("ALPHA_GENOME_API_KEY")
 elif IN_COLAB:
     from google.colab import userdata
-    ALPHAGENOME_API_KEY = userdata.get("ALPHAGENOME_API_KEY")
+    ALPHA_GENOME_API_KEY = userdata.get("ALPHA_GENOME_API_KEY")
 else:
-    ALPHAGENOME_API_KEY = os.environ.get("ALPHAGENOME_API_KEY", "")
+    ALPHA_GENOME_API_KEY = os.environ.get("ALPHA_GENOME_API_KEY", "")
 
-assert ALPHAGENOME_API_KEY, "Set ALPHAGENOME_API_KEY in Kaggle Secrets or Colab userdata!"
-print(f"API Key loaded: {ALPHAGENOME_API_KEY[:8]}...{ALPHAGENOME_API_KEY[-4:]}")
+assert ALPHA_GENOME_API_KEY, "Set ALPHA_GENOME_API_KEY in Kaggle Secrets or Colab userdata!"
+print(f"API Key loaded: {ALPHA_GENOME_API_KEY[:8]}...{ALPHA_GENOME_API_KEY[-4:]}")
 
 # %% [markdown]
 # ## 1. Configuration
@@ -385,7 +385,7 @@ async def run_scoring(sequences, actions_list, logprobs_list, onehot_list):
         tasks = []
 
         for traj_id, seq in batch:
-            tasks.append(score_sequence(seq, ALPHAGENOME_API_KEY, semaphore, traj_id))
+            tasks.append(score_sequence(seq, ALPHA_GENOME_API_KEY, semaphore, traj_id))
 
         results = await asyncio.gather(*tasks)
 

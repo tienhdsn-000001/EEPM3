@@ -15,7 +15,7 @@
 #   bash run_overnight.sh
 #
 #   # Local:
-#   export ALPHAGENOME_API_KEY="your-key"
+#   export ALPHA_GENOME_API_KEY="your-key"
 #   bash run_overnight.sh
 # ==========================================================================
 
@@ -38,7 +38,7 @@ elif [ -d "/content" ]; then
     fi
     DATA_DIR="/content/drive/MyDrive/EDM3_Data"
     # Pull API key from Colab Secrets
-    ALPHAGENOME_API_KEY=$(python -c "from google.colab import userdata; print(userdata.get('ALPHAGENOME_API_KEY'))" 2>/dev/null || echo "${ALPHAGENOME_API_KEY:-}")
+    ALPHA_GENOME_API_KEY=$(python -c "from google.colab import userdata; print(userdata.get('ALPHA_GENOME_API_KEY'))" 2>/dev/null || echo "${ALPHA_GENOME_API_KEY:-}")
 else
     PLATFORM="Local"
     DATA_DIR="${PROJECT_DIR}/data"
@@ -58,24 +58,24 @@ python -c "import jax, flax, optax, alphagenome" 2>/dev/null || {
 }
 
 # ── API Key Validation ────────────────────────────────────────
-if [ -z "${ALPHAGENOME_API_KEY:-}" ]; then
+if [ -z "${ALPHA_GENOME_API_KEY:-}" ]; then
     # Try Kaggle secrets
-    ALPHAGENOME_API_KEY=$(python -c "
+    ALPHA_GENOME_API_KEY=$(python -c "
 try:
     from kaggle_secrets import UserSecretsClient
-    print(UserSecretsClient().get_secret('ALPHAGENOME_API_KEY'))
+    print(UserSecretsClient().get_secret('ALPHA_GENOME_API_KEY'))
 except: pass
 " 2>/dev/null || true)
 fi
 
-if [ -z "${ALPHAGENOME_API_KEY:-}" ]; then
-    echo "[ERROR] ALPHAGENOME_API_KEY not set."
+if [ -z "${ALPHA_GENOME_API_KEY:-}" ]; then
+    echo "[ERROR] ALPHA_GENOME_API_KEY not set."
     echo "  Kaggle: Add to Secrets (Add-ons → Secrets)"
-    echo "  Local:  export ALPHAGENOME_API_KEY=your_key"
+    echo "  Local:  export ALPHA_GENOME_API_KEY=your_key"
     exit 1
 fi
-export ALPHAGENOME_API_KEY
-echo "[AUTH] API key loaded (${ALPHAGENOME_API_KEY:0:8}...)"
+export ALPHA_GENOME_API_KEY
+echo "[AUTH] API key loaded (${ALPHA_GENOME_API_KEY:0:8}...)"
 
 # ── Directories ───────────────────────────────────────────────
 mkdir -p "${DATA_DIR}" checkpoints logs

@@ -83,7 +83,7 @@ This pipeline completely insulates your Kaggle GPU quota from API bottlenecking.
 Upload the entire repo as a Kaggle dataset, then in a notebook cell:
 
 ```bash
-!export ALPHAGENOME_API_KEY="your-key" && bash run_overnight.sh
+!export ALPHA_GENOME_API_KEY="your-key" && bash run_overnight.sh
 ```
 
 ### Alternative: Google Colab
@@ -91,7 +91,7 @@ Upload the entire repo as a Kaggle dataset, then in a notebook cell:
 Open `notebooks/edm3_kaggle_pipeline.ipynb` in Colab. Set the API key via:
 ```python
 from google.colab import userdata
-# Add ALPHAGENOME_API_KEY in Colab Secrets (key icon in left panel)
+# Add ALPHA_GENOME_API_KEY in Colab Secrets (key icon in left panel)
 ```
 
 ---

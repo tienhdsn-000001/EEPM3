@@ -433,10 +433,10 @@ async def run_api_worker(api_key: str):
 
 
 def main():
-    api_key = os.environ.get("ALPHAGENOME_API_KEY")
+    api_key = os.environ.get("ALPHA_GENOME_API_KEY")
     if not api_key:
-        log.error("ALPHAGENOME_API_KEY environment variable not set.")
-        log.error("Run: export ALPHAGENOME_API_KEY=your_key_here")
+        log.error("ALPHA_GENOME_API_KEY environment variable not set.")
+        log.error("Run: export ALPHA_GENOME_API_KEY=your_key_here")
         sys.exit(1)
 
     log.info(f"[Auth] API key loaded ({api_key[:8]}...{api_key[-4:]})")
