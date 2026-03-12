@@ -123,7 +123,7 @@ else
     else
         NUM_TRAJ=${EEPM3_NUM_TRAJECTORIES:-5000}
         echo "Generating ${NUM_TRAJ} trajectories (T=2.0, dual-head Conv1D)..."
-        python 1_trajectory_sampler.py "$NUM_TRAJ" || {
+        python src/1_trajectory_sampler.py "$NUM_TRAJ" || {
             echo "[FATAL] Trajectory generation failed."
             exit 1
         }
@@ -139,7 +139,7 @@ echo "=========================================="
 echo "Scoring sequences (131,072-bp padded, async)..."
 echo "Crash-safe: resumes from SQLite on restart."
 
-python 2_api_worker.py || {
+python src/2_api_worker.py || {
     echo "[WARN] API worker exited with errors."
     echo "  Trainer will use whatever was scored."
 }
@@ -152,7 +152,7 @@ echo "STEP 3: RBS Data Augmentation"
 echo "=========================================="
 echo "Hallucinating trajectories for top-10% rewards..."
 
-python 4_rbs_augmenter.py || {
+python src/4_rbs_augmenter.py || {
     echo "[WARN] RBS augmentation failed. Training on original data."
 }
 echo "[✓] Step 3 complete."
@@ -166,9 +166,9 @@ echo "Training with α=${ALPHA_GFN:-0.5}, dual-head policy..."
 
 # Use V2 trainer if available, fallback to V1
 if [ -f "offline_trainer_v2.py" ]; then
-    python offline_trainer_v2.py
+    python src/offline_trainer_v2.py
 else
-    python 3_offline_trainer.py
+    python src/3_offline_trainer.py
 fi
 echo "[✓] Step 4 complete."
 
