@@ -25,6 +25,9 @@ data/experience_replay.db
 data/unscored_trajectories.npz
 *.db
 *.sqlite3
+*.npz
+.env
+.env.*
 
 # =========================
 # Logs
