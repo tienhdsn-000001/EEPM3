@@ -296,7 +296,7 @@ class AugmentedReplayLoader:
     def iter_epoch(self, rng_key=None):
         indices = np.arange(self.total)
         if rng_key is not None:
-            np.random.seed(int(jax.random.randint(rng_key, (), 0, 2**31)))
+            np.random.seed(int(jax.random.randint(rng_key, (), 0, int(2**31 - 1))))
             np.random.shuffle(indices)
 
         for b in range(self.total // self.batch_size):

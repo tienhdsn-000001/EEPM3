@@ -67,12 +67,12 @@ def load_source_experiences(db_path: str) -> list:
 
     conn = sqlite3.connect(db_path)
     cursor = conn.execute(
-        "FROM experiences ORDER BY reward DESC"
+        "SELECT trajectory_id, actions, forward_log_probs, reward FROM experiences ORDER BY reward DESC"
     )
 
     experiences = []
     for row in cursor:
-        traj_id, actions_bytes, lp_bytes, onehot_bytes, reward = row
+        traj_id, actions_bytes, lp_bytes, reward = row
         actions = np.frombuffer(actions_bytes, dtype=np.int32).copy()
         forward_log_probs = np.frombuffer(lp_bytes, dtype=np.float32).copy()
 
@@ -235,7 +235,7 @@ def main():
     for exp in experiences:
         aug_conn.execute(
             "INSERT INTO experiences "
-            "VALUES (?, ?, ?, ?, ?, 0, 'original')",
+            "VALUES (NULL, ?, ?, ?, ?, 0, 'original')",
             (
                 exp["trajectory_id"],
                 exp["actions"].tobytes(),
@@ -256,7 +256,7 @@ def main():
         for h in hallucinated:
             aug_conn.execute(
                 "INSERT INTO experiences "
-                "VALUES (?, ?, ?, ?, ?, 1, 'rbs_permutation')",
+                "VALUES (NULL, ?, ?, ?, ?, 1, 'rbs_permutation')",
                 (
                     h["source_trajectory_id"],
                     h["actions"].tobytes(),
