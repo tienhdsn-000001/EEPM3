@@ -78,7 +78,20 @@ In recent production runs, EDM3 demonstrated robust convergence and efficiency:
 
 The EDM3 engine is now structurally complete and verified. We are seeking collaborators providing **Clinical Multi-omic Tensors** (specifically single-cell ATAC-seq or high-resolution methylome data) to fuel the next generation of target discovery models.
 
-*If you have processed clinical data and require a generative engine for target mutation, please reach out via the repository issues.*
+### 🔬 Scientific Disclaimer
+
+**Disclaimer:** EDM3 is a pre-alpha computational architecture designed to solve the VRAM and latency bottlenecks of inverse genomic design. It currently demonstrates mathematical optimization convergence against proxy and unvalidated API targets. It is not yet clinically validated. **Do not use this architecture for clinical decision-making or real-world biological synthesis without rigorous wet-lab validation.**
+
+---
+
+### 🤝 Collaboration & Citation
+
+If you use this architecture or the $\alpha$-GFN / RBS offline routing methodology in your research, please link back to this repository:
+`https://github.com/tienhdsn-000001/EDM3`
+
+For labs with processed clinical multi-omic tensors interested in collaborative biological validation, reach out to:
+- **Email**: [tien.hdsn@gmail.com](mailto:tien.hdsn@gmail.com)
+- **LinkedIn**: [Hudson Tien](https://www.linkedin.com/in/hudson-tien-ab48a7322)
 
 ---
 
