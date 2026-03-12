@@ -31,7 +31,14 @@ if [ -d "/kaggle" ]; then
     # Kaggle sets secrets as env vars automatically
 elif [ -d "/content" ]; then
     PLATFORM="Colab"
-    DATA_DIR="/content/data"
+    # Automation: Mount Google Drive for persistence
+    if [ ! -d "/content/drive" ]; then
+        echo "[COLAB] Mounting Google Drive..."
+        python -c "from google.colab import drive; drive.mount('/content/drive')"
+    fi
+    DATA_DIR="/content/drive/MyDrive/EDM3_Data"
+    # Pull API key from Colab Secrets
+    ALPHAGENOME_API_KEY=$(python -c "from google.colab import userdata; print(userdata.get('ALPHAGENOME_API_KEY'))" 2>/dev/null || echo "${ALPHAGENOME_API_KEY:-}")
 else
     PLATFORM="Local"
     DATA_DIR="${PROJECT_DIR}/data"
