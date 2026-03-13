@@ -69,9 +69,18 @@ def init_database(db_path: str) -> sqlite3.Connection:
             forward_log_probs BLOB NOT NULL,
             reward REAL NOT NULL,
             api_latency_ms REAL,
+            reward_model TEXT DEFAULT 'legacy_oracle',
             scored_at TEXT DEFAULT CURRENT_TIMESTAMP
         )
     """)
+    
+    # --- Migration: Add reward_model column if missing in older DBs ---
+    cursor = conn.execute("PRAGMA table_info(experiences)")
+    columns = {row[1] for row in cursor.fetchall()}
+    if "reward_model" not in columns:
+        log.info("[DB/Migration] Adding 'reward_model' column to existing database...")
+        conn.execute("ALTER TABLE experiences ADD COLUMN reward_model TEXT DEFAULT 'legacy_oracle'")
+    
     conn.execute("""
         CREATE INDEX IF NOT EXISTS idx_trajectory_id
         ON experiences(trajectory_id)
@@ -80,9 +89,12 @@ def init_database(db_path: str) -> sqlite3.Connection:
     return conn
 
 
-def get_scored_ids(conn: sqlite3.Connection) -> set:
-    """Returns the set of trajectory IDs already scored (for resumption)."""
-    cursor = conn.execute("SELECT trajectory_id FROM experiences")
+def get_scored_ids(conn: sqlite3.Connection, reward_model: str) -> set:
+    """Returns the set of trajectory IDs already scored by the CURRENT model."""
+    cursor = conn.execute(
+        "SELECT trajectory_id FROM experiences WHERE reward_model = ?", 
+        (reward_model,)
+    )
     return {row[0] for row in cursor.fetchall()}
 
 
@@ -93,18 +105,20 @@ def insert_experience(
     forward_log_probs: np.ndarray,
     reward: float,
     api_latency_ms: float,
+    reward_model: str,
 ):
     """Inserts a scored experience and flushes immediately."""
     conn.execute(
         "INSERT OR REPLACE INTO experiences "
-        "(trajectory_id, actions, forward_log_probs, reward, api_latency_ms) "
-        "VALUES (?, ?, ?, ?, ?)",
+        "(trajectory_id, actions, forward_log_probs, reward, api_latency_ms, reward_model) "
+        "VALUES (?, ?, ?, ?, ?, ?)",
         (
             trajectory_id,
             actions.tobytes(),
             forward_log_probs.tobytes(),
             float(reward),
             float(api_latency_ms),
+            reward_model,
         ),
     )
     conn.commit()
@@ -330,6 +344,7 @@ async def process_trajectory(
     semaphore: asyncio.Semaphore,
     conn: sqlite3.Connection,
     stats: dict,
+    reward_model: str,
 ):
     """Processes a single trajectory: API call → reward → SQLite insert."""
     t0 = time.time()
@@ -370,7 +385,7 @@ async def process_trajectory(
 
         insert_experience(
             conn, trajectory_id, actions, forward_log_probs,
-            reward, api_latency_ms,
+            reward, api_latency_ms, reward_model,
         )
 
         stats["scored"] += 1
@@ -413,9 +428,10 @@ async def run_api_worker(api_key: str):
     log.info("[Validate] Sequence strings validated (ACGTN, correct length).")
 
     # Initialize database
+    reward_model_name = os.environ.get("EVO2_MODEL_NAME", "evo2_7b")
     conn = init_database(DB_PATH)
-    scored_ids = get_scored_ids(conn)
-    log.info(f"[Resume] {len(scored_ids)} trajectories already scored in {DB_PATH}")
+    scored_ids = get_scored_ids(conn, reward_model_name)
+    log.info(f"[Resume] {len(scored_ids)} trajectories already scored by '{reward_model_name}' in {DB_PATH}")
 
     # Construct mock targets and mask for reward computation
     # In production, these would come from real GTEx data
@@ -463,6 +479,7 @@ async def run_api_worker(api_key: str):
                 semaphore=semaphore,
                 conn=conn,
                 stats=stats,
+                reward_model=reward_model_name,
             )
             tasks.append(task)
 
