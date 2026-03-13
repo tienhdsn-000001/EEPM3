@@ -80,7 +80,9 @@ python -c "import alphagenome" 2>/dev/null || {
 python -c "import torch, evo2" 2>/dev/null || {
     echo "  -> [INSTALL] PyTorch and Evo2 (Large Install)..."
     echo "     Note: This can take several minutes due to model framework size."
-    pip install torch flash-attn evo2 2>&1 | tail -n 10
+    # flash-attn is explicitly omitted because compiling its wheel on Colab frequently fails.
+    # Evo2 will gracefully fall back to PyTorch's highly-optimized native SDPA (Scaled Dot-Product Attention).
+    pip install torch evo2 2>&1 | tail -n 10
 }
 echo "[SETUP] Dependency check complete."
 
