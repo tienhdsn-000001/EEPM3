@@ -79,18 +79,18 @@ Execute the decoupled orchestrator (handles sampling, scoring, augmentation, and
 
 ```bash
 ### 4.2 Model Customization & Hardware Requirements
-You can customize the underlying Evo-2 foundation model size based on your available VRAM.
+You can customize the underlying Evo-2 foundation model size based on your available VRAM. **Note:** The 7B model is the strictly recommended target for T4 GPUs as it is designed for bfloat16 accuracy without specialized FP8 hardware.
 
-| Model Size | VRAM (Approx.) | Precision | Recommended GPU |
-| :--- | :--- | :--- | :--- |
-| **Evo2 1B** | ~4GB - 8GB | FP8 / BF16 | RTX 3060, T4 |
-| **Evo2 7B** | ~15GB - 16GB | BF16 | **Colab T4 (Target)**, RTX 3090/4090 |
-| **Evo2 40B** | 80GB+ | BF16 | A100 (80GB), H100 |
+| Model Size | VRAM (Approx.) | Precision | Recommended GPU | Accuracy Note |
+| :--- | :--- | :--- | :--- | :--- |
+| **Evo2 1B** | ~8GB | FP8 | Hopper (H100) | Low accuracy in BF16 |
+| **Evo2 7B** | ~15GB - 16GB | **BF16** | **Colab T4 (Target)** | SOTA on consumer GPUs |
+| **Evo2 40B** | 80GB+ | FP8 | A100/H100 | Requires FP8/Hopper |
 
 To switch models, export the environment variable before running the pipeline:
 
 ```bash
-export EVO2_MODEL_NAME="evo2_7b" # Default
+export EVO2_MODEL_NAME="evo2_7b" # Default (Validated for T4)
 bash run_overnight.sh
 ```
 
