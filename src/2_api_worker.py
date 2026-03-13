@@ -176,12 +176,13 @@ def _get_evo2_model():
     if _evo2_model is None:
         try:
             from evo2 import Evo2
-            log.info("[Evo2] Loading real 7B model (bfloat16) into VRAM...")
+            model_name = os.environ.get("EVO2_MODEL_NAME", "evo2_7b")
+            log.info(f"[Evo2] Loading real model '{model_name}' (bfloat16) into VRAM...")
             # 'evo2_7b' is the standard model identifier designed for T4 GPUs
-            _evo2_model = Evo2("evo2_7b")
+            _evo2_model = Evo2(model_name)
             _evo2_model = _evo2_model.to("cuda", dtype=torch.bfloat16)
             _evo2_model.eval()
-            log.info("[Evo2] 7B Model loaded successfully.")
+            log.info(f"[Evo2] {model_name} loaded successfully.")
         except Exception as e:
             log.error(f"[Evo2] Failed to initialize model: {e}")
             raise
