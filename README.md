@@ -78,8 +78,16 @@ export ALPHA_GENOME_API_KEY="your_api_key_here"
 Execute the decoupled orchestrator (handles sampling, scoring, augmentation, and training):
 
 ```bash
-### 4.2 Model Customization
-You can customize the underlying Evo-2 foundation model size based on your available VRAM (e.g., 7B for 16GB VRAM, 1B for smaller instances, or 40B for high-tier clusters):
+### 4.2 Model Customization & Hardware Requirements
+You can customize the underlying Evo-2 foundation model size based on your available VRAM.
+
+| Model Size | VRAM (Approx.) | Precision | Recommended GPU |
+| :--- | :--- | :--- | :--- |
+| **Evo2 1B** | ~4GB - 8GB | FP8 / BF16 | RTX 3060, T4 |
+| **Evo2 7B** | ~15GB - 16GB | BF16 | **Colab T4 (Target)**, RTX 3090/4090 |
+| **Evo2 40B** | 80GB+ | BF16 | A100 (80GB), H100 |
+
+To switch models, export the environment variable before running the pipeline:
 
 ```bash
 export EVO2_MODEL_NAME="evo2_7b" # Default
