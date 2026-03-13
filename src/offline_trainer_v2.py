@@ -30,12 +30,51 @@ from jax import tree_util
 from typing import Tuple
 
 from gflownet_env import GFlowNetEnv
-from training_loop import (
-    build_optimizer,
-    compute_grad_l2_norm,
-    save_checkpoint,
-    ConvergenceTracker,
-)
+
+def build_optimizer(learning_rate: float, max_grad_norm: float):
+    """Builds the Optax AdamW optimizer with gradient clipping."""
+    return optax.chain(
+        optax.clip_by_global_norm(max_grad_norm),
+        optax.adamw(learning_rate=learning_rate),
+    )
+
+class ConvergenceTracker:
+    """Tracks EMA of the loss and detects convergence thresholds."""
+    def __init__(self, alpha=0.95, threshold_pct=0.05, window_size=50, variance_threshold=0.01):
+        self.alpha = alpha
+        self.threshold_pct = threshold_pct
+        self.window_size = window_size
+        self.variance_threshold = variance_threshold
+        
+        self.baseline_ema = None
+        self.ema = None
+        self.losses = []
+        self.converged = False
+        self.convergence_epoch = -1
+        
+    def update(self, mean_loss: float, epoch: int) -> bool:
+        if self.baseline_ema is None:
+            self.baseline_ema = mean_loss
+            self.ema = mean_loss
+        else:
+            self.ema = self.alpha * self.ema + (1.0 - self.alpha) * mean_loss
+            
+        self.losses.append(mean_loss)
+        if len(self.losses) > self.window_size:
+            self.losses.pop(0)
+            
+        if self.baseline_ema > 0:
+            pct_drop = (self.baseline_ema - self.ema) / self.baseline_ema
+            if pct_drop >= self.threshold_pct:
+                variance = np.var(self.losses)
+                if variance < self.variance_threshold and not self.converged:
+                    self.converged = True
+                    self.convergence_epoch = epoch
+                    
+        return self.converged
+        
+    def get_status_str(self) -> str:
+        return f"EMA: {self.ema:.4f} (Baseline: {self.baseline_ema:.4f})"
 
 
 # ---------------------------------------------------------------------------
