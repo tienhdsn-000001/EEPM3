@@ -183,7 +183,7 @@ echo "=========================================="
 echo "Training with α=${ALPHA_GFN:-0.5}, dual-head policy..."
 
 # Use V2 trainer if available, fallback to V1
-if [ -f "offline_trainer_v2.py" ]; then
+if [ -f "src/offline_trainer_v2.py" ]; then
     python src/offline_trainer_v2.py
 else
     python src/3_offline_trainer.py

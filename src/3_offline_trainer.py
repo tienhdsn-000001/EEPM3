@@ -62,8 +62,7 @@ class ConvergenceTracker:
         if self.baseline_ema > 0:
             pct_drop = (self.baseline_ema - self.ema) / self.baseline_ema
             if pct_drop >= self.threshold_pct:
-                variance = np.var(self.losses)
-                if variance < self.variance_threshold and not self.converged:
+                if not self.converged:
                     self.converged = True
                     self.convergence_epoch = epoch
                     
