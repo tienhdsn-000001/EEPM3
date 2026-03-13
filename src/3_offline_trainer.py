@@ -115,24 +115,21 @@ class ReplayDataLoader:
 
         conn = sqlite3.connect(self.db_path)
         cursor = conn.execute(
-            "SELECT actions, forward_log_probs, terminal_onehot, reward "
+            "SELECT actions, forward_log_probs, reward "
             "FROM experiences ORDER BY trajectory_id"
         )
 
         self.actions_list = []
         self.log_probs_list = []
-        self.terminal_onehot_list = []
         self.rewards_list = []
 
         for row in cursor:
-            actions_bytes, lp_bytes, onehot_bytes, reward = row
+            actions_bytes, lp_bytes, reward = row
             actions = np.frombuffer(actions_bytes, dtype=np.int32).copy()
             log_probs = np.frombuffer(lp_bytes, dtype=np.float32).copy()
-            terminal_onehot = np.frombuffer(onehot_bytes, dtype=np.float32).reshape(self.seq_len, 5).copy()
 
             self.actions_list.append(actions)
             self.log_probs_list.append(log_probs)
-            self.terminal_onehot_list.append(terminal_onehot)
             self.rewards_list.append(float(reward))
 
         conn.close()
