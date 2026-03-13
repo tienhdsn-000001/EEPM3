@@ -41,8 +41,11 @@ $$
 \mathcal{L}_{mask} = \frac{\sum (AG(x) - T)^2 \cdot M}{\sum M}
 $$
 
-### Evo-2 Zero-Shot Prior ($\log P_{Evo}$)
-Deep reinforcement learning agents are notorious for discovering "adversarial" solutions—sequences that trick the reward API into outputting a high score, but are biologically lethal (e.g., massive poly-A tracts). EEPM3 guards against this by using the log-likelihood from a foundational DNA language model (Evo-2) as a zero-shot prior. This acts as a biological guardrail, penalizing the flow network for proposing lethal adversarial DNA sequence generation.
+### Evo-2 Foundation Model Prior ($\log P_{Evo}$)
+Deep reinforcement learning agents are notorious for discovering "adversarial" solutions—sequences that trick the reward API into outputting a high score, but are biologically lethal (e.g., massive poly-A tracts). EEPM3 guards against this by using the log-likelihood from an authentic foundational DNA language model (**Evo-2**) as a biological guardrail. 
+
+> [!NOTE]
+> **Integration Status:** The initial convergence benchmarks (March 2026) were verified using a lightweight, deterministic surrogate proxy to validate the GFlowNet architecture. We are currently actively migrating to full **Evo-2 7B** inference for production-grade biological regularization.
 
 ---
 
@@ -75,6 +78,11 @@ export ALPHA_GENOME_API_KEY="your_api_key_here"
 Execute the decoupled orchestrator (handles sampling, scoring, augmentation, and training):
 
 ```bash
+### 4.2 Model Customization
+You can customize the underlying Evo-2 foundation model size based on your available VRAM (e.g., 7B for 16GB VRAM, 1B for smaller instances, or 40B for high-tier clusters):
+
+```bash
+export EVO2_MODEL_NAME="evo2_7b" # Default
 bash run_overnight.sh
 ```
 

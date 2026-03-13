@@ -38,6 +38,12 @@ If you encounter an unexpected error, a convergence failure, or an API polling i
 
 If you have a major architectural feature request or optimization proposal, opening an issue allows the maintainers to discuss the approach with you *before* you invest time in coding.
 
+## 🧬 Biological Priors & Model Integration
+We are particularly interested in contributions involving:
+- **Optimization of foundation model priors** (e.g., Evo-2 7B/40B optimization for consumer GPUs).
+- **Integration of alternative foundation models** (e.g., Caduceus, GenSLM).
+- **Refinement of the AlphaGenome reward interface** for multi-modal data.
+
 ---
 
 Thank you for your interest in advancing epigenetic inverse design!
