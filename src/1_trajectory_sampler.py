@@ -137,9 +137,6 @@ def main():
     if len(sys.argv) > 1:
         num_trajectories = int(sys.argv[1])
 
-    print("=" * 70)
-    print("STEP 1: Offline Trajectory Sampler")
-    print("=" * 70)
     print(f"[Config] Trajectories: {num_trajectories}")
     print(f"[Config] Sequence Length: {SEQ_LEN} bp")
     print(f"[Config] Edits per trajectory: {NUM_EDITS}")

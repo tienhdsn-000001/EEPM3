@@ -378,11 +378,8 @@ def make_offline_alpha_step(optimizer, alpha, num_edits):
 # ---------------------------------------------------------------------------
 
 def main():
-    print("=" * 70)
-    print("STEP 4: SOTA Offline Trainer v2")
-    print(f"  α-GFN mixing parameter: {ALPHA_GFN}")
-    print(f"  Sub-EB: Value head enabled for sub-trajectory evaluation")
-    print("=" * 70)
+    print(f"[Init] α-GFN mixing parameter: {ALPHA_GFN}")
+    print(f"[Init] Sub-EB: Value head enabled for sub-trajectory evaluation")
 
     # ── Verify dual-head policy parameters ─────────────────────
     print("\n[Architecture] Verifying GeneratorPolicyV2 parameter count...")

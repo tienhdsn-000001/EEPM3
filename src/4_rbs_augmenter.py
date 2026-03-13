@@ -199,10 +199,6 @@ def hallucinate_trajectories(
 # ---------------------------------------------------------------------------
 
 def main():
-    print("=" * 70)
-    print("STEP 3: Retrospective Backward Synthesis (RBS) Augmenter")
-    print("=" * 70)
-
     # Load source data
     print(f"[Load] Reading source database: {SOURCE_DB}")
     experiences = load_source_experiences(SOURCE_DB)

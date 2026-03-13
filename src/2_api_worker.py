@@ -386,9 +386,6 @@ async def process_trajectory(
 
 async def run_api_worker(api_key: str):
     """Main async entry point for the API worker."""
-    log.info("=" * 70)
-    log.info("STEP 2: Asynchronous AlphaGenome API Worker")
-    log.info("=" * 70)
 
     # Load unscored trajectories
     if not os.path.exists(INPUT_PATH):
