@@ -85,7 +85,7 @@ TOTAL_EPOCHS = 500
 LEARNING_RATE = 3e-4
 MAX_GRAD_NORM = 1.0
 CHECKPOINT_DIR = "checkpoints"
-CHECKPOINT_PATH = "checkpoints/edm3_epoch_500.npz"  # Resume from prior training
+CHECKPOINT_PATH = "checkpoints/eepm3_epoch_500.npz"  # Resume from prior training
 
 
 # ---------------------------------------------------------------------------
@@ -329,7 +329,7 @@ def main():
 
     # Save offline-trained log_z
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
-    offline_ckpt = os.path.join(CHECKPOINT_DIR, "edm3_offline_final.npz")
+    offline_ckpt = os.path.join(CHECKPOINT_DIR, "eepm3_offline_final.npz")
     np.savez(offline_ckpt, log_z=np.array(float(log_z)))
     print(f"\n[Checkpoint] Saved offline-trained log_z to: {offline_ckpt}")
     print(f"  Final log_z: {float(log_z):.6f}")

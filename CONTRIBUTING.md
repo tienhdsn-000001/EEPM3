@@ -11,8 +11,8 @@ To ensure stability and maintain a high standard of code rigor, please follow th
 1. **Fork** the repository to your personal GitHub account.
 2. **Clone** your fork locally:
    ```bash
-   git clone https://github.com/your-username/EDM3.git
-   cd EDM3
+   git clone https://github.com/your-username/EEPM3.git
+   cd EEPM3
    ```
 3. **Create a feature branch** from `main`. Name it descriptively:
    ```bash

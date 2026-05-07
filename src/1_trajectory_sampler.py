@@ -30,7 +30,7 @@ NUM_EDITS = 10            # Actions per trajectory
 TEMPERATURE = 2.0         # High temperature for exploration diversity
 METADATA_DIM = 10
 OUTPUT_PATH = "data/unscored_trajectories.npz"
-CHECKPOINT_PATH = "checkpoints/edm3_epoch_500.npz"
+CHECKPOINT_PATH = "checkpoints/eepm3_epoch_500.npz"
 
 
 def load_checkpoint_params(checkpoint_path: str, seq_len: int, metadata_dim: int):

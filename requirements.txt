@@ -1,0 +1,11 @@
+jax
+flax
+optax
+alphagenome
+torch
+transformers
+evo2
+bitsandbytes
+numpy
+aiohttp
+sqlite3

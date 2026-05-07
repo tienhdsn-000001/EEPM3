@@ -430,7 +430,7 @@ def main():
     log_z = jnp.float32(0.0)
 
     # Try loading from previous checkpoint
-    prior_ckpt = os.path.join(CHECKPOINT_DIR, "edm3_offline_final.npz")
+    prior_ckpt = os.path.join(CHECKPOINT_DIR, "eepm3_offline_final.npz")
     if os.path.exists(prior_ckpt):
         data = np.load(prior_ckpt)
         if "log_z" in data:
@@ -490,7 +490,7 @@ def main():
 
     # Save
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
-    ckpt_path = os.path.join(CHECKPOINT_DIR, "edm3_v2_offline_final.npz")
+    ckpt_path = os.path.join(CHECKPOINT_DIR, "eepm3_v2_offline_final.npz")
     np.savez(ckpt_path, log_z=np.array(float(log_z)))
     print(f"\n[Checkpoint] Saved to {ckpt_path}")
     print(f"  Final log_z: {float(log_z):.6f}")
